@@ -2,8 +2,8 @@ from flask import Flask
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
-import flask_jwt_extended as jwt
-import json
+
+
 
 app = Flask(__name__)
 api = Api(app)
@@ -44,3 +44,8 @@ api.add_resource(resources.TokenRefresh, '/token/refresh')
 api.add_resource(resources.AllUsers, '/users')
 api.add_resource(resources.SecretResource, '/secret')
 api.add_resource(resources.ObventManage, '/db/<id>')
+# TODO: GET with OBJECT/TS filter
+# TODO: GET with OBJECT Keys
+# TODO: Verson based optimistic transaction commit
+# TODO: Postgres migration
+# TODO: Parent/Child in the same table

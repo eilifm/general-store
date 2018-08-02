@@ -9,7 +9,7 @@ app = Flask(__name__)
 api = Api(app)
 
 app.config.from_envvar('YOURAPPLICATION_SETTINGS')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -29,12 +29,17 @@ app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
 #     return {'message': str(e)}, 401
 #
 
+
+import models
+
+import resources
+
 @jwt.token_in_blacklist_loader
 def check_if_token_in_blacklist(decrypted_token):
     jti = decrypted_token['jti']
     return models.RevokedTokenModel.is_jti_blacklisted(jti)
 
-import views, models, resources
+
 
 api.add_resource(resources.UserRegistration, '/registration')
 api.add_resource(resources.UserLogin, '/login')
@@ -44,8 +49,14 @@ api.add_resource(resources.TokenRefresh, '/token/refresh')
 api.add_resource(resources.AllUsers, '/users')
 api.add_resource(resources.SecretResource, '/secret')
 api.add_resource(resources.ObventManage, '/db/<id>')
+
 # TODO: GET with OBJECT/TS filter
 # TODO: GET with OBJECT Keys
 # TODO: Verson based optimistic transaction commit
 # TODO: Postgres migration
 # TODO: Parent/Child in the same table
+# TODO: UWSGI or similar and associated refactor!
+
+if __name__ == "__main__":
+    # app.run(host='0.0.0.0')
+    api.run()

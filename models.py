@@ -102,16 +102,16 @@ class GUID(TypeDecorator):
 
 class Obvents(db.Model):
     __tablename__ = 'obvents'
-    id = db.Column(GUID, primary_key = True)
+    id = db.Column(UUID, primary_key = True)
     last_ts = db.Column(TIMESTAMP)
     o_type = db.Column(VARCHAR(255))
-    data = db.Column(TEXT)
+    data = db.Column(JSONB)
 
     @property
     def serialize(self):
         return {
-            'id': str(self.id),
-            'data': json.loads(self.data),
+            'id': self.id,
+            'data': self.data,
             "o_type": self.o_type,
             "last_ts": self.last_ts
         }

@@ -1,4 +1,4 @@
-from flask_restful import Resource, reqparse
+from flask_restful import Resource, reqparse, request
 from flask import jsonify
 from models import UserModel, RevokedTokenModel, Obvents
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
@@ -107,24 +107,34 @@ obvent_parser = reqparse.RequestParser()
 obvent_parser.add_argument('o_type', help = 'This field cannot be blank', required = True)
 obvent_parser.add_argument('data', help = 'This field cannot be blank', required = True)
 
-
 class ObventManage(Resource):
     @jwt_required
     def get(self, id):
         return Obvents.find_by_id(id).serialize
 
     def put(self, id):
-        data = obvent_parser.parse_args()
 
+        data = request.get_json(silent=True)
+        if not data:
+            try:
+                data = json.loads(request.data)
+            except json.JSONDecodeError:
+                return {'message': 'Something went wrong'}, 500
+            return {'message': 'Something went wrong'}, 500
+
+
+
+        # data = obvent_parser.parse_args()
         exist_obvent = Obvents.find_by_id(id)
 
         if exist_obvent:
-            exist_obvent.data = json.dumps(data['data'])
+            exist_obvent.data = data['data']
             exist_obvent.o_type = data['o_type']
             exist_obvent.save()
-            return jsonify(exist_obvent.serialize)
+            return exist_obvent.serialize
 
         else:
+
             new_event = Obvents(id=id, data=data['data'], o_type=data['o_type'])
             try:
                 new_event.add()

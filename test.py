@@ -1,4 +1,5 @@
 import requests
+import uuid
 
 body = {
     "username": "test3",
@@ -29,6 +30,7 @@ def get(access_token, url):
     r = requests.get(url, headers=header)
     return r.json()
 
+
 def put(access_token, id, otype, data):
 
     header = {
@@ -49,9 +51,13 @@ print(auth)
 # print(get(auth['access_token'], "http://127.0.0.1:5000/secret"))
 
 d = {'first_name': 'Eilif', 'last_name': 'Mikkelsen'}
+
 print(put(auth['access_token'], "d36dab4c-48ca-4c2d-8cd4-78cde0c1009c", 'test', d))
 
-print(get(auth['access_token'], "http://127.0.0.1:5000/db/d36dab4c-48ca-4c2d-8cd4-78cde0c1009c"))
+# print(put(auth['access_token'], "d36dab4c-48ca-4c2d-8cd4-78cde0c1009c", 'test', "lol"))
+for i in range(10000):
+    print(put(auth['access_token'], str(uuid.uuid4()), 'test', d))
+    # print(get(auth['access_token'], "http://127.0.0.1:5000/db/d36dab4c-48ca-4c2d-8cd4-78cde0c1009c"))
 
 
 

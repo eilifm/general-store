@@ -9,8 +9,6 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.types import TypeDecorator, CHAR
 import uuid
 
-# from generalstore import db
-
 db = SQLAlchemy()
 
 
@@ -76,7 +74,6 @@ class RevokedTokenModel(db.Model):
     def is_jti_blacklisted(cls, jti):
         query = cls.query.filter_by(jti = jti).first()
         return bool(query)
-
 
 
 class GUID(TypeDecorator):

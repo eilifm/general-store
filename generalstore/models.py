@@ -1,4 +1,6 @@
 from sqlalchemy.dialects.postgresql import UUID, JSONB, TIMESTAMP, VARCHAR
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql.functions import current_timestamp
 from passlib.hash import pbkdf2_sha256 as sha256
 from flask import url_for, request
@@ -116,9 +118,12 @@ class GUID(TypeDecorator):
 class Obvents(db.Model):
     __tablename__ = 'obvents'
     id = db.Column(UUID, primary_key = True)
-    last_ts = db.Column(TIMESTAMP, onupdate=_datetime.datetime.now(), server_default=db.func.current_timestamp(), server_onupdate=db.func.current_timestamp())
-    o_type = db.Column(VARCHAR(255))
+    last_ts = db.Column(TIMESTAMP, onupdate=_datetime.datetime.now(), server_default=db.func.current_timestamp(), server_onupdate=db.func.current_timestamp(), index=True)
+    o_type = db.Column(VARCHAR(255), index=True)
     data = db.Column(JSONB)
+    parent_id = db.Column(UUID, ForeignKey('obvents.id'), index=True)
+
+    parent = relationship(lambda: Obvents, remote_side=id, backref='sub_regions')
 
     @property
     def serialize(self):

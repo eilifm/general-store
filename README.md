@@ -17,4 +17,30 @@ https://uwsgi-docs.readthedocs.io/en/latest/WSGIquickstart.html
 
 A postgres backed thing that meets the above requirements
 
-`FLASK_APP=run.py flask rum`
+# Examples
+
+Maybe you can use it as simple IoT data store
+
+```python
+import requests
+import uuid
+
+data = {
+    "sensor1": "values",
+    "sensor2": "values",
+    "sensor3": "values",
+}
+
+body = {
+    "o_type": "my-iot",
+    "data": data
+}
+
+headers = {}
+base_url = ""
+id = str(uuid.uuid4())
+
+r = requests.put(base_url + '/db/'+ id, headers=headers, json=data)
+
+```
+

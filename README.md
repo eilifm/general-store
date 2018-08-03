@@ -51,3 +51,4 @@ r = requests.put(base_url + '/db/'+ id, headers=headers, json=data)
 
 ```
 
+https://blog.timescale.com/scaling-partitioning-data-postgresql-10-explained-cd48a712a9a1

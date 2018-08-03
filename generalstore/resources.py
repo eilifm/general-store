@@ -124,12 +124,10 @@ class ObventManage(Resource):
             return {'message': 'Something went wrong'}, 500
 
 
-
-        # data = obvent_parser.parse_args()
         exist_obvent = Obvents.find_by_id(id)
 
         if exist_obvent:
-            exist_obvent.data = data['data']
+            exist_obvent.val = data['data']
             exist_obvent.o_type = data['o_type']
             exist_obvent.last_ts = datetime.datetime.utcnow()
             exist_obvent.save()
@@ -137,7 +135,7 @@ class ObventManage(Resource):
 
         else:
 
-            new_event = Obvents(id=id, data=data['data'], o_type=data['o_type'])
+            new_event = Obvents(id=id, val=data['data'], o_type=data['o_type'])
             try:
                 new_event.add()
                 return {"success": True}

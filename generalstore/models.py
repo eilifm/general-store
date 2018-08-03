@@ -117,7 +117,7 @@ class Obvents(db.Model):
     id = db.Column(UUID, primary_key = True)
     last_ts = db.Column(TIMESTAMP, onupdate=_datetime.datetime.now(), server_default=db.func.current_timestamp(), server_onupdate=db.func.current_timestamp(), index=True)
     o_type = db.Column(VARCHAR(255), index=True)
-    data = db.Column(JSONB)
+    val = db.Column(JSONB)
     parent_id = db.Column(UUID, ForeignKey('obvents.id'), index=True)
 
     parent = relationship(lambda: Obvents, remote_side=id, backref='sub_regions')

@@ -4,14 +4,31 @@
 I spend a lot of time thinking up projects that all need a small amount of state managed
 in a loosly structured way. GeneralStore is my evolving answer to these needs. 
 
+I acknowledge that there are a variety of other databases do many of the things that
+GeneralStore is designed to do. With this in mind, I have still been frustrated by the
+complexity of purpose built solutions. GeneralStore will not be an efficient datastore for 
+every use case but it should have features that make "just fine" for personal projects that 
+just need to work. 
+
+# Product Definition
+
+## User Stories
 1. Most of the time it can simply be a key-value store
-2. Sometimes I want to mark a key as belonging to type/table/collection
-3. Sometimes I want to link objects to their parents
-4. Sometimes I want objects to just be events and I want to get them in order
-5. I just want to throw JSON at the endpoint and have it handle the rest
+2. Sometimes I want to mark a key as belonging to type/table/collectio/namespace
+3. Objects may be linked to their parents
+4. Records in a namespace may be retrieved in timestamp order.
+5. Web endpoint should follow standard patterns and be entirely JSON.
 6. I'll take care of parsing/executing on the data stored in my project's application, don't worry about massive amounts of context.
-7. I want the underlying data storage to support a SQL query engine to support deeper analysis of whatever I decide to store without any ETL BS. 
+7. SQL support to make analysis on this data seamless with ETL. 
 8. I want to be able to spin up a new on of these databases and relink an app that needs more database horsepower. 
+9. A given record can have a geographic reference
+
+## Some Use Cases
+1. Store semi-structured personal data like exports from Mint, PG&E, rent.
+2. Personal IoT (Arduino, deployed RaspberryPis)
+
+## Given the Requirements...
+1. Written in Python because 
 
 https://uwsgi-docs.readthedocs.io/en/latest/WSGIquickstart.html
 

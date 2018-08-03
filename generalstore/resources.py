@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse, request
 from generalstore.models import UserModel, RevokedTokenModel, Obvents
-
+import datetime
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
 import json
 
@@ -131,6 +131,7 @@ class ObventManage(Resource):
         if exist_obvent:
             exist_obvent.data = data['data']
             exist_obvent.o_type = data['o_type']
+            exist_obvent.last_ts = datetime.datetime.utcnow()
             exist_obvent.save()
             return exist_obvent.serialize
 
@@ -147,4 +148,9 @@ class ObjectManage(Resource):
     @jwt_required
     def get(self, o_type):
         recs, next, prev = Obvents.find_by_type(o_type)
-        return [x.serialize for x in recs.items]
+        if not prev:
+            prev = ''
+        return { 'next': request.base_url + next,
+                 'last': request.base_url + prev,
+                 'data': [x.serialize for x in recs.items]
+                 }

@@ -1,6 +1,8 @@
 from sqlalchemy.dialects.postgresql import UUID, JSONB, TIMESTAMP, VARCHAR
+from sqlalchemy.sql.functions import current_timestamp
 from passlib.hash import pbkdf2_sha256 as sha256
 from flask import url_for, request
+import _datetime
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.types import TypeDecorator, CHAR
 import uuid
@@ -114,7 +116,7 @@ class GUID(TypeDecorator):
 class Obvents(db.Model):
     __tablename__ = 'obvents'
     id = db.Column(UUID, primary_key = True)
-    last_ts = db.Column(TIMESTAMP)
+    last_ts = db.Column(TIMESTAMP, onupdate=_datetime.datetime.now(), server_default=db.func.current_timestamp(), server_onupdate=db.func.current_timestamp())
     o_type = db.Column(VARCHAR(255))
     data = db.Column(JSONB)
 
@@ -124,7 +126,7 @@ class Obvents(db.Model):
             'id': self.id,
             'data': self.data,
             "o_type": self.o_type,
-            "last_ts": self.last_ts
+            "last_ts": self.last_ts.isoformat()
         }
 
     def add(self):
@@ -142,10 +144,10 @@ class Obvents(db.Model):
     @classmethod
     def find_by_type(cls, o_type):
         page = request.args.get('page', 1, type=int)
-        # posts = cls.query.filter_by(o_type = o_type).order_by(Obvents.last_ts.desc()).paginate(
-        #     page, 10, False)
-        posts = cls.query.filter_by(o_type = o_type).paginate(
+        posts = cls.query.filter_by(o_type = o_type).order_by(Obvents.last_ts.desc()).paginate(
             page, 10, False)
+        # posts = cls.query.filter_by(o_type = o_type).paginate(
+        #     page, 10, False)
         next_url = url_for('objectmanage', o_type = o_type, page=posts.next_num) \
             if posts.has_next else None
         prev_url = url_for('objectmanage', o_type = o_type, page=posts.prev_num) \

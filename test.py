@@ -55,9 +55,10 @@ d = {'first_name': 'Eilif', 'last_name': 'Mikkelsen'}
 # for i in range(10000):
 #     print(put(auth['access_token'], "d36dab4c-48ca-4c2d-8cd4-78cde0c1009c", 'test', d))
 
-
+import time
 # print(put(auth['access_token'], "d36dab4c-48ca-4c2d-8cd4-78cde0c1009c", 'test', "lol"))
-for i in range(1):
+for i in range(100):
     print(put(auth['access_token'], str(uuid.uuid4()), 'bals', d))
+    time.sleep(3)
     # print(get(auth['access_token'], "http://127.0.0.1:5000/db/d36dab4c-48ca-4c2d-8cd4-78cde0c1009c"))
 

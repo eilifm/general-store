@@ -17,6 +17,13 @@ https://uwsgi-docs.readthedocs.io/en/latest/WSGIquickstart.html
 
 A postgres backed thing that meets the above requirements
 
+# Config
+
+```python
+SECRET_KEY = 'some-secret-string'
+SQLALCHEMY_DATABASE_URI = 'sqlite:///app.db'
+```
+
 # Examples
 
 Maybe you can use it as simple IoT data store

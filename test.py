@@ -52,13 +52,12 @@ print(auth)
 
 d = {'first_name': 'Eilif', 'last_name': 'Mikkelsen'}
 
-print(put(auth['access_token'], "d36dab4c-48ca-4c2d-8cd4-78cde0c1009c", 'test', d))
+# for i in range(10000):
+#     print(put(auth['access_token'], "d36dab4c-48ca-4c2d-8cd4-78cde0c1009c", 'test', d))
+
 
 # print(put(auth['access_token'], "d36dab4c-48ca-4c2d-8cd4-78cde0c1009c", 'test', "lol"))
-for i in range(10000):
-    print(put(auth['access_token'], str(uuid.uuid4()), 'test', d))
+for i in range(1):
+    print(put(auth['access_token'], str(uuid.uuid4()), 'bals', d))
     # print(get(auth['access_token'], "http://127.0.0.1:5000/db/d36dab4c-48ca-4c2d-8cd4-78cde0c1009c"))
 
-
-
-# {"message": "User test1 was created", "access_token": "", "refresh_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1MzMxNzk0OTgsIm5iZiI6MTUzMzE3OTQ5OCwianRpIjoiMzIxYTgxMjctMjgyYi00ZjQ2LWIwNzgtODBhZWU0OTg1YTk5IiwiZXhwIjoxNTM1NzcxNDk4LCJpZGVudGl0eSI6InRlc3QxIiwidHlwZSI6InJlZnJlc2gifQ.m6qVoKu2g0ea0KmkynBaA4wNzKunZtKT9ZW60eFOUy4"}

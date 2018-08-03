@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse, request
-from flask import jsonify
-from models import UserModel, RevokedTokenModel, Obvents
+from generalstore.models import UserModel, RevokedTokenModel, Obvents
+
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
 import json
 
@@ -107,6 +107,7 @@ obvent_parser = reqparse.RequestParser()
 obvent_parser.add_argument('o_type', help = 'This field cannot be blank', required = True)
 obvent_parser.add_argument('data', help = 'This field cannot be blank', required = True)
 
+
 class ObventManage(Resource):
     @jwt_required
     def get(self, id):
@@ -141,3 +142,9 @@ class ObventManage(Resource):
                 return {"success": True}
             except:
                 return {'message': 'Something went wrong'}, 500
+
+class ObjectManage(Resource):
+    @jwt_required
+    def get(self, o_type):
+        recs, next, prev = Obvents.find_by_type(o_type)
+        return [x.serialize for x in recs.items]

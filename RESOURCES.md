@@ -3,3 +3,4 @@
 [JWT Authentication 1](https://codeburst.io/jwt-authorization-in-flask-c63c1acf4eeb)
 
 
+https://uwsgi-docs.readthedocs.io/en/latest/WSGIquickstart.html

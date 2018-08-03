@@ -1,10 +1,21 @@
-from run import db
 from sqlalchemy.dialects.postgresql import UUID, JSONB, TIMESTAMP, VARCHAR
-from sqlalchemy.dialects.sqlite import TEXT
 from passlib.hash import pbkdf2_sha256 as sha256
+from flask import url_for, request
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.types import TypeDecorator, CHAR
 import uuid
-import json
+
+# from generalstore import db
+
+db = SQLAlchemy()
+
+
+def connect_to_db(app):
+    """Connect the database to Flask app."""
+
+    # Configure to use PostgreSQL database
+    db.app = app
+    db.init_app(app)
 
 
 class UserModel(db.Model):
@@ -126,6 +137,20 @@ class Obvents(db.Model):
     @classmethod
     def find_by_id(cls, id):
         return cls.query.filter_by(id = id).first()
+
+
+    @classmethod
+    def find_by_type(cls, o_type):
+        page = request.args.get('page', 1, type=int)
+        # posts = cls.query.filter_by(o_type = o_type).order_by(Obvents.last_ts.desc()).paginate(
+        #     page, 10, False)
+        posts = cls.query.filter_by(o_type = o_type).paginate(
+            page, 10, False)
+        next_url = url_for('objectmanage', o_type = o_type, page=posts.next_num) \
+            if posts.has_next else None
+        prev_url = url_for('objectmanage', o_type = o_type, page=posts.prev_num) \
+            if posts.has_prev else None
+        return posts, next_url, prev_url
 
 
 

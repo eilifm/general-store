@@ -13,7 +13,7 @@ in a loosly structured way. GeneralStore is my evolving answer to these needs.
 7. I want the underlying data storage to support a SQL query engine to support deeper analysis of whatever I decide to store without any ETL BS. 
 8. I want to be able to spin up a new on of these databases and relink an app that needs more database horsepower. 
 
-
+https://uwsgi-docs.readthedocs.io/en/latest/WSGIquickstart.html
 
 A postgres backed thing that meets the above requirements
 

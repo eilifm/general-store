@@ -1,0 +1,12 @@
+[requires]
+python_version = '3.6'
+
+[packages]
+Flask = '1.0.2'
+Flask-JWT = '0.3.2'
+Flask-JWT-Extended = '3.12.0'
+Flask-RESTful = '0.3.6'
+Flask-SQLAlchemy = '2.3.2'
+uWSGI = '2.0.17.1;
+passlib = '1.7.1'
+

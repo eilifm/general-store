@@ -10,6 +10,5 @@ Flask-SQLAlchemy = '*'
 uWSGI = '*'
 passlib = "*"
 psycopg2 = "*"
-PyJWT = "*"
 requests = "*"
 SQLAlchemy = "*"

@@ -94,7 +94,7 @@ count = 0
 for i in range(int(sys.argv[1])):
     if count % 100 == 0:
         auth = login('test3', 'test')
-    print(put(auth['access_token'], str(uuid.uuid4()), 'server_monitoring', generate_status()))
+    print(put(auth['access_token'], str(uuid.uuid4()), str(sys.argv[3])+'_monitoring', generate_status()))
     time.sleep(float(sys.argv[2]))
     # print(get(auth['access_token'], "http://127.0.0.1:5000/db/d36dab4c-48ca-4c2d-8cd4-78cde0c1009c"))
     count += 1

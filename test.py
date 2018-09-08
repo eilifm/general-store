@@ -60,6 +60,7 @@ print(auth)
 import time
 import random
 
+
 # print(put(auth['access_token'], "d36dab4c-48ca-4c2d-8cd4-78cde0c1009c", 'test', "lol"))
 for i in range(int(sys.argv[1])):
 
@@ -70,6 +71,6 @@ for i in range(int(sys.argv[1])):
     }
 
     print(put(auth['access_token'], str(uuid.uuid4()), 'env_sensors', d))
-    time.sleep(.01)
+    time.sleep(float(sys.argv[2]))
     # print(get(auth['access_token'], "http://10.8.0.3:5000/db/d36dab4c-48ca-4c2d-8cd4-78cde0c1009c"))
 

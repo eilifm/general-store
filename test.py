@@ -1,5 +1,7 @@
 import requests
 import uuid
+import sys
+
 
 body = {
     "username": "test3",
@@ -59,7 +61,7 @@ import time
 import random
 
 # print(put(auth['access_token'], "d36dab4c-48ca-4c2d-8cd4-78cde0c1009c", 'test', "lol"))
-for i in range(100):
+for i in range(int(sys.argv[1])):
 
     d = {
         'sensor_if': 1,

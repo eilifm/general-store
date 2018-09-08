@@ -8,11 +8,11 @@ body = {
     "password": "test"
 }
 
-r = requests.post("http://127.0.0.1:5000/registration", data=body)
+r = requests.post(sys.argv[4]+"/registration", data=body)
 
 
 def refresh(refresh_token):
-    r = requests.post("http://127.0.0.1:5000/token/refresh", )
+    r = requests.post(sys.argv[4]+"/token/refresh", )
 
 def login(username, password):
     body = {
@@ -20,7 +20,7 @@ def login(username, password):
         "password": password
     }
 
-    r = requests.post("http://127.0.0.1:5000/login", data=body)
+    r = requests.post(sys.argv[4]+"/login", data=body)
     return r.json()
 
 
@@ -43,13 +43,13 @@ def put(access_token, id, otype, data):
         'data': data
     }
 
-    r = requests.put("http://127.0.0.1:5000/db/"+id, headers=header, json=body)
+    r = requests.put(sys.argv[4]+"/db/"+id, headers=header, json=body)
 
     return r.text
 
 auth = login('test3', 'test')
 print(auth)
-# print(get(auth['access_token'], "http://127.0.0.1:5000/secret"))
+# print(get(auth['access_token'], sys.argv[4]+"/secret"))
 
 
 
@@ -96,5 +96,5 @@ for i in range(int(sys.argv[1])):
         auth = login('test3', 'test')
     print(put(auth['access_token'], str(uuid.uuid4()), str(sys.argv[3])+'_monitoring', generate_status()))
     time.sleep(float(sys.argv[2]))
-    # print(get(auth['access_token'], "http://127.0.0.1:5000/db/d36dab4c-48ca-4c2d-8cd4-78cde0c1009c"))
+    # print(get(auth['access_token'], sys.argv[4]+"/db/d36dab4c-48ca-4c2d-8cd4-78cde0c1009c"))
     count += 1

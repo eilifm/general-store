@@ -64,7 +64,8 @@ import psutil
 
 def cpu_dict():
     cpu_output = {
-        "cores": psutil.cpu_count()
+        "cores": psutil.cpu_count(),
+        "usage": psutil.cpu_percent()
     }
     return cpu_output
 

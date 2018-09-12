@@ -45,7 +45,7 @@ def put(access_token, id, otype, data):
 
     r = requests.put(sys.argv[4]+"/db/"+id, headers=header, json=body)
 
-    return r.text
+    return r
 
 auth = login('test3', 'test')
 print(auth)
@@ -94,7 +94,15 @@ count = 0
 for i in range(int(sys.argv[1])):
     if count % 100 == 0:
         auth = login('test3', 'test')
-    print(put(auth['access_token'], str(uuid.uuid4()), str(sys.argv[3])+'_monitoring', generate_status()))
+    id = str(uuid.uuid4())
+    status = generate_status()
+
+    r = put(auth['access_token'], id , str(sys.argv[3])+'_monitoring',status )
+    print( r.text.strip() + " - " + str(r.status_code))
+
+    r = get(auth['access_token'], sys.argv[4]+"/db/"+id)
+    print(r.text.strip() + " - " + str(r.status_code))
+
     time.sleep(float(sys.argv[2]))
     # print(get(auth['access_token'], sys.argv[4]+"/db/d36dab4c-48ca-4c2d-8cd4-78cde0c1009c"))
     count += 1

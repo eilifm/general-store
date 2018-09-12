@@ -126,7 +126,7 @@ class Obvents(db.Model):
     def serialize(self):
         return {
             'id': self.id,
-            'data': self.data,
+            'data': self.val,
             "o_type": self.o_type,
             "last_ts": self.last_ts.isoformat()
         }

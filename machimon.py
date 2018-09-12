@@ -29,7 +29,7 @@ def get(access_token, url):
         'Authorization': "Bearer " + access_token
     }
     r = requests.get(url, headers=header)
-    return r.json()
+    return r
 
 
 def put(access_token, id, otype, data):
@@ -99,9 +99,9 @@ for i in range(int(sys.argv[1])):
 
     r = put(auth['access_token'], id , str(sys.argv[3])+'_monitoring',status )
     print( r.text.strip() + " - " + str(r.status_code))
+    print(sys.argv[4]+"/db/"+id)
 
     r = get(auth['access_token'], sys.argv[4]+"/db/"+id)
-    print(r.text.strip() + " - " + str(r.status_code))
 
     time.sleep(float(sys.argv[2]))
     # print(get(auth['access_token'], sys.argv[4]+"/db/d36dab4c-48ca-4c2d-8cd4-78cde0c1009c"))

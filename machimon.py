@@ -97,7 +97,7 @@ for i in range(int(sys.argv[1])):
     id = str(uuid.uuid4())
     status = generate_status()
 
-    r = put(auth['access_token'], id , str(sys.argv[3])+'_monitoring',status )
+    r = put(auth['access_token'], id , str(sys.argv[3])+'_monitoring', status)
     print( r.text.strip() + " - " + str(r.status_code))
     print(sys.argv[4]+"/db/"+id)
 

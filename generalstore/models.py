@@ -1,5 +1,5 @@
 from sqlalchemy.dialects.postgresql import UUID, JSONB, TIMESTAMP, VARCHAR
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.functions import current_timestamp
 from passlib.hash import pbkdf2_sha256 as sha256
@@ -115,10 +115,12 @@ class GUID(TypeDecorator):
 class Obvents(db.Model):
     __tablename__ = 'obvents'
     id = db.Column(UUID, primary_key = True)
+    o_id = db.Column(VARCHAR(255), index=True)
     last_ts = db.Column(TIMESTAMP, onupdate=_datetime.datetime.now(), server_default=db.func.current_timestamp(), server_onupdate=db.func.current_timestamp(), index=True)
     o_type = db.Column(VARCHAR(255), index=True)
     val = db.Column(JSONB)
     parent_id = db.Column(UUID, ForeignKey('obvents.id'), index=True)
+    UniqueConstraint('o_id', 'o_type', name='object_integrity')
 
     parent = relationship(lambda: Obvents, remote_side=id, backref='sub_regions')
 
@@ -127,6 +129,7 @@ class Obvents(db.Model):
         return {
             'id': self.id,
             'data': self.val,
+            'o_id': self.o_id,
             "o_type": self.o_type,
             "last_ts": self.last_ts.isoformat()
         }

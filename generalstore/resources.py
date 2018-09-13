@@ -3,6 +3,9 @@ from generalstore.models import UserModel, RevokedTokenModel, Obvents
 import datetime
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
 import json
+import sqlalchemy.exc as sq_exc
+
+
 
 parser = reqparse.RequestParser()
 parser.add_argument('username', help = 'This field cannot be blank', required = True)
@@ -142,8 +145,13 @@ class ObventManage(Resource):
             try:
                 new_event.add()
                 return {"success": True}
-            except:
-                return {'message': 'Something went wrong'}, 500
+            except sq_exc.IntegrityError as e:
+                return {'message': str(e)}, 403
+
+            except Exception as e:
+                print(type(e))
+                return {'message': "Something went wrong"}
+
 
 class ObjectManage(Resource):
     @jwt_required

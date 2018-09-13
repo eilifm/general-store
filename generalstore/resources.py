@@ -134,8 +134,11 @@ class ObventManage(Resource):
             return exist_obvent.serialize
 
         else:
+            try:
+                new_event = Obvents(id=id, val=data['data'], o_type=data['o_type'], o_id=data['o_id'])
+            except KeyError:
+                new_event = Obvents(id=id, val=data['data'], o_type=data['o_type'], o_id=None)
 
-            new_event = Obvents(id=id, val=data['data'], o_type=data['o_type'])
             try:
                 new_event.add()
                 return {"success": True}

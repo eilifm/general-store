@@ -43,6 +43,7 @@ def put(access_token, id, otype, data):
         'data': data
     }
 
+    print(json.dumps(body))
     r = requests.put(sys.argv[4]+"/db/"+id, headers=header, json=body)
 
     return r
@@ -90,10 +91,14 @@ def generate_status():
     return status
 
 # print(put(auth['access_token'], "d36dab4c-48ca-4c2d-8cd4-78cde0c1009c", 'test', "lol"))
+start = time.time()
 count = 0
+import json
+last = 0
 for i in range(int(sys.argv[1])):
     if count % 100 == 0:
         auth = login('test3', 'test')
+        print(count/(time.time() - start))
     id = str(uuid.uuid4())
     status = generate_status()
 

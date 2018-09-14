@@ -2,12 +2,16 @@ from flask import Flask
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
+from werkzeug.contrib.profiler import ProfilerMiddleware
+
 
 app = Flask(__name__)
 api = Api(app)
+
 app.config.from_envvar('YOURAPPLICATION_SETTINGS')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
+# app.config['PROFILE'] = True
+# app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions=[30])
 import generalstore.models as models
 
 models.connect_to_db(app)
@@ -44,6 +48,7 @@ api.add_resource(resources.AllUsers, '/users')
 api.add_resource(resources.SecretResource, '/secret')
 api.add_resource(resources.ObventManage, '/db/<id>')
 api.add_resource(resources.ObjectManage, '/db/object/<o_type>')
+api.add_resource(resources.Status, '/status')
 
 # TODO: GET with OBJECT/TS filter
 # TODO: GET with OBJECT Keys

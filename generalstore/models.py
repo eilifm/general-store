@@ -1,6 +1,7 @@
 from sqlalchemy.dialects.postgresql import UUID, JSONB, TIMESTAMP, VARCHAR
-from sqlalchemy import ForeignKey, UniqueConstraint
+from sqlalchemy import ForeignKey, UniqueConstraint, inspect
 from sqlalchemy.orm import relationship
+from sqlalchemy import update
 from sqlalchemy.sql.functions import current_timestamp
 from passlib.hash import pbkdf2_sha256 as sha256
 from flask import url_for, request
@@ -111,6 +112,16 @@ class GUID(TypeDecorator):
                 value = uuid.UUID(value)
             return value
 
+def row2dict(row):
+    d = {}
+    for column in row.__table__.columns:
+        d[column.name] = str(getattr(row, column.name))
+    return d
+
+def object_as_dict(obj):
+    return {c.key: getattr(obj, c.key)
+            for c in inspect(obj).mapper.column_attrs}
+
 
 class Obvents(db.Model):
     __tablename__ = 'obvents'
@@ -126,6 +137,7 @@ class Obvents(db.Model):
 
 
     parent = relationship(lambda: Obvents, remote_side=id, backref='sub_regions')
+
 
     @property
     def serialize(self):
@@ -145,9 +157,28 @@ class Obvents(db.Model):
         db.session.commit()
 
     @classmethod
-    def find_by_id(cls, id):
-        return cls.query.filter_by(id = id).first()
+    def raw_session(self):
+        return db.session
 
+    @classmethod
+    def find_by_id(cls, id):
+
+        return cls.query.filter_by(id = id).one()
+        return str(dict(row.items()))
+
+    @classmethod
+    def find_by_id_2(cls, id):
+        row = db.engine.execute("SELECT * FROM obvents WHERE id='{}' LIMIT 1".format(id)).fetchall()[0]
+        return str(dict(row.items()))
+
+
+    @classmethod
+    def find_and_update(cls, id, val):
+        # print(update(Obvents, values=val))
+        # q = cls.query.filter_by(id = id).update(val)
+        # db.session.flush()
+        # db.session.commit()
+        return True
 
     @classmethod
     def find_by_type(cls, o_type):

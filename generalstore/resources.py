@@ -1,8 +1,9 @@
 from flask_restful import Resource, reqparse, request
-from generalstore.models import UserModel, RevokedTokenModel, Obvents
+from generalstore.models import UserModel, RevokedTokenModel, Obvents, db
 import datetime
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
 import json
+from sqlalchemy import update
 import sqlalchemy.exc as sq_exc
 
 
@@ -114,7 +115,11 @@ obvent_parser.add_argument('data', help = 'This field cannot be blank', required
 class ObventManage(Resource):
     @jwt_required
     def get(self, id):
-        return Obvents.find_by_id(id).serialize
+        record = Obvents.find_by_id(id)
+        if not record:
+            return {'message': 'record with id: {} not found'.format(id)}, 422
+        else:
+            return record.serialize
 
     def put(self, id):
 
@@ -127,16 +132,9 @@ class ObventManage(Resource):
             return {'message': 'Something went wrong'}, 500
 
 
-        exist_obvent = Obvents.find_by_id(id)
-
-        if exist_obvent:
-            exist_obvent.val = data['data']
-            exist_obvent.o_type = data['o_type']
-            exist_obvent.last_ts = datetime.datetime.utcnow()
-            exist_obvent.save()
-            return exist_obvent.serialize
-
-        else:
+        rows = db.session.query(Obvents).filter(Obvents.id == id).update(dict(val=data['data'], o_type=data['o_type'], last_ts=datetime.datetime.utcnow()))
+        db.session.commit()
+        if rows == 0:
             try:
                 new_event = Obvents(id=id, val=data['data'], o_type=data['o_type'], o_id=data['o_id'])
             except KeyError:
@@ -152,6 +150,33 @@ class ObventManage(Resource):
                 print(type(e))
                 return {'message': "Something went wrong"}
 
+        else:
+            return {"success": True}
+        # exist_obvent = Obvents.find_by_id(id)
+
+        # if exist_obvent:
+        #     exist_obvent.val = data['data']
+        #     exist_obvent.o_type = data['o_type']
+        #     exist_obvent.last_ts = datetime.datetime.utcnow()
+        #     # exist_obvent.save()
+        #     return exist_obvent.serialize
+        #
+        # else:
+        #     try:
+        #         new_event = Obvents(id=id, val=data['data'], o_type=data['o_type'], o_id=data['o_id'])
+        #     except KeyError:
+        #         new_event = Obvents(id=id, val=data['data'], o_type=data['o_type'], o_id=None)
+        #
+        #     try:
+        #         new_event.add()
+        #         return {"success": True}
+        #     except sq_exc.IntegrityError as e:
+        #         return {'message': str(e)}, 403
+        #
+        #     except Exception as e:
+        #         print(type(e))
+        #         return {'message': "Something went wrong"}
+
 
 class ObjectManage(Resource):
     @jwt_required
@@ -163,3 +188,7 @@ class ObjectManage(Resource):
                  'last': request.base_url + prev,
                  'data': [x.serialize for x in recs.items]
                  }
+
+class Status(Resource):
+    def get(self):
+        return {"success": True}

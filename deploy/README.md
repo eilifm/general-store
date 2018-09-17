@@ -11,7 +11,7 @@ from the root directory of this repo
 `uwsgi --socket 0.0.0.0:5000 --protocol=http -w wsgi --master --processes 2 --threads 2 --stats 127.0.0.1:91911`
 
 Tuned
-`YOURAPPLICATION_SETTINGS=./env.cfg uwsgi --socket 0.0.0.0:5000 --protocol=http -w wsgi --processes 1  --threads 2 --enable-thread  --lazy-apps --disable-logging --stats 127.0.0.1:9191 #logger file:logfile=/tmp/uwsgi.log,maxsize=2000000`
+`YOURAPPLICATION_SETTINGS=./env.cfg uwsgi --socket 0.0.0.0:5000 --protocol=http -w wsgi --processes 4  --threads 200 --enable-thread  --lazy-apps --disable-logging --stats 127.0.0.1:9191 #logger file:logfile=/tmp/uwsgi.log,maxsize=2000000`
 
 `YOURAPPLICATION_SETTINGS=./env.cfg uwsgi --socket 0.0.0.0:5000 --protocol=http -w wsgi --processes 1  --threads 2 --enable-thread  --gevent 2000 -l 1000  --lazy-apps --disable-logging --stats 127.0.0.1:9191 #logger file:logfile=/tmp/uwsgi.log,maxsize=2000000`
 

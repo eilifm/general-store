@@ -97,9 +97,10 @@ import json
 last = 0
 for i in range(int(sys.argv[1])):
     if count % 100 == 0:
-        auth = login('test3', 'test')
+        auth = login('server', 'test')
         print(count/(time.time() - start))
     id = str(uuid.uuid4())
+    print(auth)
     status = generate_status()
 
     r = put(auth['access_token'], id , str(sys.argv[3])+'_monitoring', status)

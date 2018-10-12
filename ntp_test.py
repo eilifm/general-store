@@ -76,13 +76,22 @@ class NTPMonitor:
     def range(self) -> List[float]:
         return [min([x.offset for x in self.data]), max([x.offset for x in self.data])]
 
+    def _request(self):
+        count = 0
+        while count < 4:
+            try:
+                return self._client.request(self._server, version=3)
+            except:
+                count += 1
+                continue
+
     def poll(self, samples = None, init = False):
 
         if not samples:
-            tmp = [self._client.request(self._server, version=3) for i in range(self.poll_samples)]
+            tmp = [self._request() for i in range(self.poll_samples)]
 
         else:
-            tmp = [self._client.request(self._server, version=3) for i in range(samples)]
+            tmp = [self._request() for i in range(samples)]
 
         for r in tmp:
             self.data.append(r)
@@ -129,23 +138,23 @@ class NTPMonitor:
     def tt_interval(self):
         now = time.time()
         me = norm.ppf(self._cert, loc=abs(self.mean), scale=self.stdev)
-        return [(now-me), (now+me), now, me*2]
+        return [now-me+np.average([x.offset for x in self.data[-30:]]), (now+me+np.average([x.offset for x in self.data[-30:]])), now, me*2]
 
 
-samples = NTPMonitor(.5, 'tick.foxkid.io', 2, 100, .9999999999)
+samples = NTPMonitor(.5, 'tick.foxkid.io', 3, 300, .9999999999)
 
 
 width = 22
-print(tableprint.header(['Last Offset (us)', 'Last Delay', 'Mean Offset (us)', 'RMS Offset', 'Offset St. Dev. (us)', 'Interval Width (us)'], style='clean', width=width))
+print(tableprint.header(['Last Offset (us)', 'Last Delay', 'Mean Offset (us)', 'RMS Offset', 'Offset St. Dev. (us)', 'Interval Lower', 'Interval Upper'], style='clean', width=width))
 
-print(tableprint.row([samples.last.offset*1e+6, samples.status().delay, samples.mean*1e+6, samples.rms_offset*1e6, samples.stdev*1e+6, samples.tt_interval()[3]*1e6], width=width, style='clean'))
+print(tableprint.row([samples.last.offset*1e+6, np.average([x.offset for x in samples.data[-30:]])*1e6, samples.mean*1e+6, samples.rms_offset*1e6, samples.stdev*1e+6, samples.tt_interval()[0], samples.tt_interval()[1]], width=width, style='clean', format_spec='7f'))
 
 last_tti = None
 while True:
     now = time.time()
     if now > samples.last_computed_sys_time + samples.poll_freq:
         samples.poll()
-        print(tableprint.row([samples.last.offset * 1e+6, samples.status().delay, samples.mean * 1e+6, samples.rms_offset*1e6, samples.stdev * 1e+6, samples.tt_interval()[3]*1e6], width=width, style='clean'))
+        print(tableprint.row([samples.last.offset * 1e+6, np.average([x.offset for x in samples.data[-30:]])*1e6, samples.mean * 1e+6, samples.rms_offset*1e6, samples.stdev * 1e+6, samples.tt_interval()[0], samples.tt_interval()[1]], width=width, style='clean',format_spec='7f'))
 
     tti = samples.tt_interval()
     # print(tti)

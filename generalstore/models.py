@@ -193,6 +193,16 @@ class Obvents(db.Model):
             if posts.has_prev else None
         return posts, next_url, prev_url
 
-
-
+    @classmethod
+    def get_last(cls, o_type, n = 10):
+        page = request.args.get('page', 1, type=int)
+        posts = cls.query.filter_by(o_type = o_type).order_by(Obvents.last_ts.desc()).paginate(
+            page, 10, False)
+        # posts = cls.query.filter_by(o_type = o_type).paginate(
+        #     page, 10, False)
+        next_url = url_for('objectmanage', o_type = o_type, page=posts.next_num) \
+            if posts.has_next else None
+        prev_url = url_for('objectmanage', o_type = o_type, page=posts.prev_num) \
+            if posts.has_prev else None
+        return posts, next_url, prev_url
 

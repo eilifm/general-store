@@ -149,7 +149,7 @@ class NTPMonitor:
         tti.append(now)
         return tti
 
-samples = NTPMonitor(5, sys.argv[1], 3, 300, .99999999999999)
+samples = NTPMonitor(5, sys.argv[1], 3, 300, .999999999)
 
 
 width = 22

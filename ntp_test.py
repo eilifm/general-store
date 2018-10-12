@@ -42,8 +42,8 @@ class NTPMonitor:
         self._cert = cert
         self._weights = (np.array(list(range(self._max_samples))) + 1)/50
 
-        process = Popen(['ntpdate', '-u', 'time.google.com'], stdout=PIPE, stderr=PIPE)
-        stdout, stderr = process.communicate()
+        # process = Popen(['ntpdate', '-u', 'time.google.com'], stdout=PIPE, stderr=PIPE)
+        # stdout, stderr = process.communicate()
 
         self.poll(samples = 6, init=True)
 

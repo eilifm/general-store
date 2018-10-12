@@ -139,7 +139,7 @@ class NTPMonitor:
     def tt_interval(self):
         now = time.time()
         me = norm.ppf(self._cert, loc=abs(self.mean), scale=self.stdev)
-        spread = abs(self.mean* (now - self.last_computed_sys_time))/2
+        spread = abs(self.rms_offset * (now - self.last_computed_sys_time))/2
         tti = [now-me-spread, (now+me+spread), now]
         tti.append(tti[1]-tti[0])
         # shift = self.mean * (now - self.last_computed_sys_time)

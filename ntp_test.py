@@ -132,7 +132,7 @@ class NTPMonitor:
         return [(now-me), (now+me), now, me*2]
 
 
-samples = NTPMonitor(1, 'time.google.com', 3, 50, .9999999)
+samples = NTPMonitor(1, 'tick.foxkid.io', 3, 50, .9999999999)
 
 
 width = 22

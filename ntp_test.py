@@ -8,6 +8,7 @@ import tableprint
 from string import Template
 from tabulate import tabulate
 import math
+import sys
 from subprocess import Popen, PIPE
 
 
@@ -138,24 +139,34 @@ class NTPMonitor:
     def tt_interval(self):
         now = time.time()
         me = norm.ppf(self._cert, loc=abs(self.mean), scale=self.stdev)
-        return [now-me+np.average([x.offset for x in self.data[-30:]]), (now+me+np.average([x.offset for x in self.data[-30:]])), now, me*2]
+        spread = abs(self.mean* (now - self.last_computed_sys_time))/2
+        tti = [now-me-spread, (now+me+spread), now]
+        tti.append(tti[1]-tti[0])
+        # shift = self.mean * (now - self.last_computed_sys_time)
+        # tti[0] = tti[0] + shift
+        # tti[1] = tti[1] + shift
+        # tti[2] = tti[1] + shift
+        tti.append(now)
+        return tti
 
-
-samples = NTPMonitor(.5, 'tick.foxkid.io', 3, 300, .9999999999)
+samples = NTPMonitor(5, sys.argv[1], 3, 300, .99999999999999)
 
 
 width = 22
-print(tableprint.header(['Last Offset (us)', 'Last Delay', 'Mean Offset (us)', 'RMS Offset', 'Offset St. Dev. (us)', 'Interval Lower', 'Interval Upper'], style='clean', width=width))
+print(tableprint.header(['Last Offset (us)', 'Last Delay', 'Mean Offset (us)', 'RMS Offset', 'Offset St. Dev. (us)', 'Interval Width (us)', 'Interval Lower', 'Interval Upper'], style='clean', width=width))
 
-print(tableprint.row([samples.last.offset*1e+6, np.average([x.offset for x in samples.data[-30:]])*1e6, samples.mean*1e+6, samples.rms_offset*1e6, samples.stdev*1e+6, samples.tt_interval()[0], samples.tt_interval()[1]], width=width, style='clean', format_spec='7f'))
+print(tableprint.row([samples.last.offset*1e+6, np.average([x.offset for x in samples.data[-30:]])*1e6, samples.mean*1e+6, samples.rms_offset*1e6, samples.stdev*1e+6, samples.tt_interval()[3]*1e6, samples.tt_interval()[0], samples.tt_interval()[1]], width=width, style='clean', format_spec='7f'))
 
 last_tti = None
+count = 0
 while True:
     now = time.time()
     if now > samples.last_computed_sys_time + samples.poll_freq:
         samples.poll()
-        print(tableprint.row([samples.last.offset * 1e+6, np.average([x.offset for x in samples.data[-30:]])*1e6, samples.mean * 1e+6, samples.rms_offset*1e6, samples.stdev * 1e+6, samples.tt_interval()[0], samples.tt_interval()[1]], width=width, style='clean',format_spec='7f'))
-
+        print(tableprint.row(
+            [samples.last.offset * 1e+6, np.average([x.offset for x in samples.data[-30:]]) * 1e6, samples.mean * 1e+6,
+             samples.rms_offset * 1e6, samples.stdev * 1e+6, samples.tt_interval()[3] * 1e6, samples.tt_interval()[0],
+             samples.tt_interval()[1]], width=width, style='clean', format_spec='7f'))
     tti = samples.tt_interval()
     # print(tti)
     # print(abs(tti[1]-tti[2]))
@@ -171,6 +182,11 @@ while True:
             print(tti)
             break
         last_tti = tti
+
+    if count % 1000 == 0:
+        print(tableprint.row([samples.last.offset * 1e+6, np.average([x.offset for x in samples.data[-30:]])*1e6, samples.mean * 1e+6, samples.rms_offset*1e6, samples.stdev * 1e+6, samples.tt_interval()[3]*1e6, samples.tt_interval()[0], samples.tt_interval()[1]], width=width, style='clean',format_spec='7f'))
+
+    count += 1
 
     time.sleep((tti[1] - tti[2]))
 

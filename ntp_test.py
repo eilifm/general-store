@@ -45,6 +45,10 @@ class NTPMonitor:
         return stats.stdev([x.offset for x in self.data])
 
     @property
+    def delay_stdev(self) -> float:
+        return stats.stdev([x.delay for x in self.data])
+
+    @property
     def range(self) -> List[float]:
         return [min([x.offset for x in self.data]), max([x.offset for x in self.data])]
 
@@ -59,9 +63,14 @@ class NTPMonitor:
             self.data.append(r)
 
         self.last_computed_sys_time = self.data[-1].recv_time
+
         # Restrict data to last n samples
         if len(self.data) > self._max_samples:
             self.data = self.data[-self._max_samples:]
+
+        s = self.delay_stdev
+        self.data = list(filter(lambda x: True if x.delay >= s*2 else False, self.data))
+
 
     def NTPStatsToDict(self, ntp_struct: ntp.NTPStats):
         return {'offset': ntp_struct.offset,

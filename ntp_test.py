@@ -159,19 +159,22 @@ print(tableprint.row([samples.last.offset*1e+6, np.average([x.offset for x in sa
 
 last_tti = None
 count = 0
+elapsed_time = time.time()
+last_check = None
 while True:
     now = time.time()
-    if now > samples.last_computed_sys_time + samples.poll_freq:
-        samples.poll()
-        print(tableprint.row(
-            [samples.last.offset * 1e+6, np.average([x.offset for x in samples.data[-30:]]) * 1e6, samples.mean * 1e+6,
-             samples.rms_offset * 1e6, samples.stdev * 1e+6, samples.tt_interval()[3] * 1e6, samples.tt_interval()[0],
-             samples.tt_interval()[1]], width=width, style='clean', format_spec='7f'))
+    # if now > samples.last_computed_sys_time + samples.poll_freq:
+    #     samples.poll()
+    #     print(tableprint.row(
+    #         [samples.last.offset * 1e+6, np.average([x.offset for x in samples.data[-30:]]) * 1e6, samples.mean * 1e+6,
+    #          samples.rms_offset * 1e6, samples.stdev * 1e+6, samples.tt_interval()[3] * 1e6, samples.tt_interval()[0],
+    #          samples.tt_interval()[1]], width=width, style='clean', format_spec='7f'))
     tti = samples.tt_interval()
     # print(tti)
     # print(abs(tti[1]-tti[2]))
 
     if not last_tti:
+        last_check = time.time()
         last_tti = tti
         time.sleep((tti[1] - tti[2]))
         continue
@@ -183,8 +186,11 @@ while True:
             break
         last_tti = tti
 
-    if count % 1000 == 0:
-        print(tableprint.row([samples.last.offset * 1e+6, np.average([x.offset for x in samples.data[-30:]])*1e6, samples.mean * 1e+6, samples.rms_offset*1e6, samples.stdev * 1e+6, samples.tt_interval()[3]*1e6, samples.tt_interval()[0], samples.tt_interval()[1]], width=width, style='clean',format_spec='7f'))
+    
+    print(count)
+        # print(1000/(now - last_check))
+
+    #     print(tableprint.row([samples.last.offset * 1e+6, np.average([x.offset for x in samples.data[-30:]])*1e6, samples.mean * 1e+6, samples.rms_offset*1e6, samples.stdev * 1e+6, samples.tt_interval()[3]*1e6, samples.tt_interval()[0], samples.tt_interval()[1]], width=width, style='clean',format_spec='7f'))
 
     count += 1
 

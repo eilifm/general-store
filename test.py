@@ -8,11 +8,11 @@ body = {
     "password": "test"
 }
 
-r = requests.post("http://localhost:5000/registration", data=body)
+r = requests.post("http://10.8.0.20:5000/registration", data=body)
 
 
 def refresh(refresh_token):
-    r = requests.post("http://localhost:5000/token/refresh", )
+    r = requests.post("http://10.8.0.20:5000/token/refresh", )
 
 
 def login(username, password):
@@ -21,7 +21,7 @@ def login(username, password):
         "password": password
     }
 
-    r = requests.post("http://localhost:5000/login", data=body)
+    r = requests.post("http://10.8.0.20:5000/login", data=body)
     return r.json()
 
 
@@ -44,7 +44,7 @@ def put(access_token, id, otype, data):
         'data': data
     }
 
-    r = requests.put("http://localhost:5000/db/"+id, headers=header, json=body)
+    r = requests.put("http://10.8.0.20:5000/db/"+id, headers=header, json=body)
 
     return r.text
 
@@ -66,7 +66,9 @@ for i in range(int(sys.argv[1])):
     }
 
     namespace = 'env_sensors'
-    print(put(auth['access_token'], str(uuid.uuid4()), namespace, d))
+    rec_id = str(uuid.uuid4())
+    print(put(auth['access_token'], rec_id, namespace, d))
     time.sleep(float(sys.argv[2]))
-    # print(get(auth['access_token'], "http://localhost:5000/db/d36dab4c-48ca-4c2d-8cd4-78cde0c1009c"))
+
+    print(get(auth['access_token'], "http://10.8.0.20:5000/db/"+rec_id))
 

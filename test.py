@@ -8,11 +8,11 @@ body = {
     "password": "test"
 }
 
-r = requests.post("http://10.8.0.3:5000/registration", data=body)
+r = requests.post("http://localhost:5000/registration", data=body)
 
 
 def refresh(refresh_token):
-    r = requests.post("http://10.8.0.3:5000/token/refresh", )
+    r = requests.post("http://localhost:5000/token/refresh", )
 
 
 def login(username, password):
@@ -21,7 +21,7 @@ def login(username, password):
         "password": password
     }
 
-    r = requests.post("http://10.8.0.3:5000/login", data=body)
+    r = requests.post("http://localhost:5000/login", data=body)
     return r.json()
 
 
@@ -44,18 +44,12 @@ def put(access_token, id, otype, data):
         'data': data
     }
 
-    r = requests.put("http://10.8.0.3:5000/db/"+id, headers=header, json=body)
+    r = requests.put("http://localhost:5000/db/"+id, headers=header, json=body)
 
     return r.text
 
 auth = login('test3', 'test')
 print(auth)
-# print(get(auth['access_token'], "http://10.8.0.3:5000/secret"))
-
-
-
-# for i in range(10000):
-#     print(put(auth['access_token'], "d36dab4c-48ca-4c2d-8cd4-78cde0c1009c", 'test', d))
 
 import time
 import random
@@ -64,13 +58,15 @@ import random
 # print(put(auth['access_token'], "d36dab4c-48ca-4c2d-8cd4-78cde0c1009c", 'test', "lol"))
 for i in range(int(sys.argv[1])):
 
+    # Build your data payload
     d = {
         'sensor_if': 1,
         'temp': random.random()*10,
         'co2': random.choice([random.random()*100, None])
     }
 
-    print(put(auth['access_token'], str(uuid.uuid4()), 'env_sensors', d))
+    namespace = 'env_sensors'
+    print(put(auth['access_token'], str(uuid.uuid4()), namespace, d))
     time.sleep(float(sys.argv[2]))
-    # print(get(auth['access_token'], "http://10.8.0.3:5000/db/d36dab4c-48ca-4c2d-8cd4-78cde0c1009c"))
+    # print(get(auth['access_token'], "http://localhost:5000/db/d36dab4c-48ca-4c2d-8cd4-78cde0c1009c"))
 

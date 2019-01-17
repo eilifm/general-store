@@ -72,3 +72,4 @@ for i in range(int(sys.argv[1])):
 
     print(get(auth['access_token'], "http://"+ sys.argv[3] + ":5000/db/"+rec_id))
 
+curl -d '{"username":"eilif_test", "password":"posmikk"}' -H "Content-Type: application/json" -X POST http://10.8.0.3:5000/login

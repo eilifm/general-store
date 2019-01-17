@@ -18,7 +18,7 @@ class UserRegistration(Resource):
         data = parser.parse_args()
 
         if UserModel.find_by_username(data['username']):
-            return {'message': 'User {} already exists'.format(data['username'])}
+            return {'msg': 'User {} already exists'.format(data['username'])}
 
         new_user = UserModel(
             username = data['username'],
@@ -30,12 +30,12 @@ class UserRegistration(Resource):
             access_token = create_access_token(identity = data['username'])
             refresh_token = create_refresh_token(identity = data['username'])
             return {
-                'message': 'User {} was created'.format(data['username']),
+                'msg': 'User {} was created'.format(data['username']),
                 'access_token': access_token,
                 'refresh_token': refresh_token
                 }
         except:
-            return {'message': 'Something went wrong'}, 500
+            return {'msg': 'Something went wrong'}, 500
 
 
 class UserLogin(Resource):
@@ -44,18 +44,18 @@ class UserLogin(Resource):
         current_user = UserModel.find_by_username(data['username'])
 
         if not current_user:
-            return {'message': 'User {} doesn\'t exist'.format(data['username'])}
+            return {'msg': 'User {} doesn\'t exist'.format(data['username'])}
 
         if UserModel.verify_hash(data['password'], current_user.password):
             access_token = create_access_token(identity = data['username'])
             refresh_token = create_refresh_token(identity = data['username'])
             return {
-                'message': 'Logged in as {}'.format(current_user.username),
+                'msg': 'Logged in as {}'.format(current_user.username),
                 'access_token': access_token,
                 'refresh_token': refresh_token
                 }
         else:
-            return {'message': 'Wrong credentials'}
+            return {'msg': 'Wrong credentials'}
 
 
 class UserLogoutAccess(Resource):
@@ -65,9 +65,9 @@ class UserLogoutAccess(Resource):
         try:
             revoked_token = RevokedTokenModel(jti = jti)
             revoked_token.add()
-            return {'message': 'Access token has been revoked'}
+            return {'msg': 'Access token has been revoked'}
         except:
-            return {'message': 'Something went wrong'}, 500
+            return {'msg': 'Something went wrong'}, 500
 
 
 class UserLogoutRefresh(Resource):
@@ -77,9 +77,9 @@ class UserLogoutRefresh(Resource):
         try:
             revoked_token = RevokedTokenModel(jti = jti)
             revoked_token.add()
-            return {'message': 'Refresh token has been revoked'}
+            return {'msg': 'Refresh token has been revoked'}
         except:
-            return {'message': 'Something went wrong'}, 500
+            return {'msg': 'Something went wrong'}, 500
 
 
 
@@ -117,7 +117,7 @@ class ObventManage(Resource):
     def get(self, id):
         record = Obvents.find_by_id(id)
         if not record:
-            return {'message': 'record with id: {} not found'.format(id)}, 422
+            return {'msg': 'record with id: {} not found'.format(id)}, 422
         else:
             return record.serialize
 
@@ -128,8 +128,8 @@ class ObventManage(Resource):
             try:
                 data = json.loads(request.data)
             except json.JSONDecodeError:
-                return {'message': 'Something went wrong'}, 500
-            return {'message': 'Something went wrong'}, 500
+                return {'msg': 'Something went wrong'}, 500
+            return {'msg': 'Something went wrong'}, 500
 
 
         rows = db.session.query(Obvents).filter(Obvents.id == id).update(dict(val=data['data'], o_type=data['o_type'], last_ts=datetime.datetime.utcnow()))
@@ -144,11 +144,11 @@ class ObventManage(Resource):
                 new_event.add()
                 return {"success": True}
             except sq_exc.IntegrityError as e:
-                return {'message': str(e)}, 403
+                return {'msg': str(e)}, 403
 
             except Exception as e:
                 print(type(e))
-                return {'message': "Something went wrong"}
+                return {'msg': "Something went wrong"}
 
         else:
             return {"success": True}
@@ -171,11 +171,11 @@ class ObventManage(Resource):
         #         new_event.add()
         #         return {"success": True}
         #     except sq_exc.IntegrityError as e:
-        #         return {'message': str(e)}, 403
+        #         return {'msg': str(e)}, 403
         #
         #     except Exception as e:
         #         print(type(e))
-        #         return {'message': "Something went wrong"}
+        #         return {'msg': "Something went wrong"}
 
 
 class ObjectManage(Resource):

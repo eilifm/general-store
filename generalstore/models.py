@@ -122,6 +122,17 @@ def object_as_dict(obj):
     return {c.key: getattr(obj, c.key)
             for c in inspect(obj).mapper.column_attrs}
 
+from sqlalchemy.sql import expression
+from sqlalchemy.ext.compiler import compiles
+from sqlalchemy.types import DateTime
+
+class utcnow(expression.FunctionElement):
+    type = DateTime()
+
+@compiles(utcnow, 'postgresql')
+def pg_utcnow(element, compiler, **kw):
+    return "TIMEZONE('utc', CURRENT_TIMESTAMP)"
+
 
 class Obvents(db.Model):
     __tablename__ = 'obvents'
@@ -130,7 +141,7 @@ class Obvents(db.Model):
     )
     id = db.Column(UUID, primary_key = True)
     o_id = db.Column(VARCHAR(255), index=True)
-    last_ts = db.Column(TIMESTAMP, onupdate=_datetime.datetime.now(), server_default=db.func.current_timestamp(), server_onupdate=db.func.current_timestamp(), index=True)
+    last_ts = db.Column(TIMESTAMP, onupdate=_datetime.datetime.uctnow(), server_default=utcnow(), server_onupdate=utcnow(), index=True)
     o_type = db.Column(VARCHAR(255), index=True)
     val = db.Column(JSONB)
     parent_id = db.Column(UUID, ForeignKey('obvents.id'), index=True)

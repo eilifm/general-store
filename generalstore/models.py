@@ -141,7 +141,7 @@ class Obvents(db.Model):
     )
     id = db.Column(UUID, primary_key = True)
     o_id = db.Column(VARCHAR(255), index=True)
-    last_ts = db.Column(TIMESTAMP, onupdate=_datetime.datetime.uctnow(), server_default=utcnow(), server_onupdate=utcnow(), index=True)
+    last_ts = db.Column(TIMESTAMP, onupdate=_datetime.datetime.utcnow(), server_default=utcnow(), server_onupdate=utcnow(), index=True)
     o_type = db.Column(VARCHAR(255), index=True)
     val = db.Column(JSONB)
     parent_id = db.Column(UUID, ForeignKey('obvents.id'), index=True)

@@ -91,6 +91,7 @@ if __name__ == "__main__":
 
             auth = login('test3', 'test')
             print(auth)
+            break
         except Exception as e:
             print(e)
             retries += 1

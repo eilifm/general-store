@@ -3,14 +3,6 @@ import uuid
 import sys
 
 
-body = {
-    "username": "server",
-    "password": "test"
-}
-
-r = requests.post(sys.argv[4]+"/registration", data=body)
-
-
 def refresh(refresh_token):
     r = requests.post(sys.argv[4]+"/token/refresh", )
 
@@ -47,11 +39,6 @@ def put(access_token, id, otype, data):
     r = requests.put(sys.argv[4]+"/db/"+id, headers=header, json=body)
 
     return r
-
-auth = login('test3', 'test')
-print(auth)
-# print(get(auth['access_token'], sys.argv[4]+"/secret"))
-
 
 
 # for i in range(10000):
@@ -91,34 +78,48 @@ def generate_status():
     return status
 
 # print(put(auth['access_token'], "d36dab4c-48ca-4c2d-8cd4-78cde0c1009c", 'test', "lol"))
-start = time.time()
-count = 0
-import json
-last = 0
-for i in range(int(sys.argv[1])):
 
-    status = generate_status()
+if __name__ == "__main__":
+    body = {
+    "username": "server",
+    "password": "test"
+    }
 
-    retries = 0
-    while retries <= 10:
-        try:
-            if count % 100 == 0:
-                auth = login('server', 'test')
-                print(count/(time.time() - start))
-                print(auth)
-                id = str(uuid.uuid4())
+    r = requests.post(sys.argv[4]+"/registration", data=body)
 
-            r = put(auth['access_token'], id , str(sys.argv[3])+'_monitoring', status)
-            # print( r.text.strip() + " - " + str(r.status_code))
-            print(sys.argv[4]+"/db/"+id)
-            break
-        except Exception as e:
-            print(e)
-            retries += 1
-            time.sleep(60)
-            
-        # r = get(auth['access_token'], sys.argv[4]+"/db/"+id)
+    auth = login('test3', 'test')
+    print(auth)
 
-    time.sleep(float(sys.argv[2]))
-    # print(get(auth['access_token'], sys.argv[4]+"/db/d36dab4c-48ca-4c2d-8cd4-78cde0c1009c"))
-    count += 1
+
+
+    start = time.time()
+    count = 0
+    import json
+    last = 0
+    for i in range(int(sys.argv[1])):
+
+        status = generate_status()
+
+        retries = 0
+        while retries <= 10:
+            try:
+                if count % 100 == 0:
+                    auth = login('server', 'test')
+                    print(count/(time.time() - start))
+                    print(auth)
+                    id = str(uuid.uuid4())
+
+                r = put(auth['access_token'], id , str(sys.argv[3])+'_monitoring', status)
+                # print( r.text.strip() + " - " + str(r.status_code))
+                print(sys.argv[4]+"/db/"+id)
+                break
+            except Exception as e:
+                print(e)
+                retries += 1
+                time.sleep(60)
+
+            # r = get(auth['access_token'], sys.argv[4]+"/db/"+id)
+
+        time.sleep(float(sys.argv[2]))
+        # print(get(auth['access_token'], sys.argv[4]+"/db/d36dab4c-48ca-4c2d-8cd4-78cde0c1009c"))
+        count += 1

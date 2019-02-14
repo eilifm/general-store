@@ -114,7 +114,7 @@ if __name__ == "__main__":
                     auth = login('server', 'test')
                     print(count/(time.time() - start))
                     print(auth)
-                    id = str(uuid.uuid4())
+                id = str(uuid.uuid4())
 
                 r = put(auth['access_token'], id , str(sys.argv[3])+'_monitoring', status)
                 # print( r.text.strip() + " - " + str(r.status_code))

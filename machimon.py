@@ -86,14 +86,15 @@ if __name__ == "__main__":
     }
 
     while retries <= 1000:
-        r = requests.post(sys.argv[4]+"/registration", data=body)
+        try:
+            r = requests.post(sys.argv[4]+"/registration", data=body)
 
-        auth = login('test3', 'test')
-        print(auth)
-    except Exception as e:
-        print(e)
-        retries += 1
-        time.sleep(60)
+            auth = login('test3', 'test')
+            print(auth)
+        except Exception as e:
+            print(e)
+            retries += 1
+            time.sleep(60)
 
 
 

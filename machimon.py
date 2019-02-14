@@ -114,7 +114,7 @@ for i in range(int(sys.argv[1])):
         except Exception as e:
             print(e)
             retries += 1
-            sleep(60)
+            time.sleep(60)
             
         # r = get(auth['access_token'], sys.argv[4]+"/db/"+id)
 

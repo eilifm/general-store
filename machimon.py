@@ -104,11 +104,19 @@ for i in range(int(sys.argv[1])):
 
     status = generate_status()
 
-    r = put(auth['access_token'], id , str(sys.argv[3])+'_monitoring', status)
-    # print( r.text.strip() + " - " + str(r.status_code))
-    print(sys.argv[4]+"/db/"+id)
-
-    # r = get(auth['access_token'], sys.argv[4]+"/db/"+id)
+    retries = 0
+    while retries <= 10:
+        try:
+            r = put(auth['access_token'], id , str(sys.argv[3])+'_monitoring', status)
+            # print( r.text.strip() + " - " + str(r.status_code))
+            print(sys.argv[4]+"/db/"+id)
+            break
+        except Exception as e:
+            print(e)
+            retries += 1
+            sleep(60)
+            
+        # r = get(auth['access_token'], sys.argv[4]+"/db/"+id)
 
     time.sleep(float(sys.argv[2]))
     # print(get(auth['access_token'], sys.argv[4]+"/db/d36dab4c-48ca-4c2d-8cd4-78cde0c1009c"))

@@ -96,17 +96,18 @@ count = 0
 import json
 last = 0
 for i in range(int(sys.argv[1])):
-    if count % 100 == 0:
-        auth = login('server', 'test')
-        print(count/(time.time() - start))
-        print(auth)
-    id = str(uuid.uuid4())
 
     status = generate_status()
 
     retries = 0
     while retries <= 10:
         try:
+            if count % 100 == 0:
+                auth = login('server', 'test')
+                print(count/(time.time() - start))
+                print(auth)
+                id = str(uuid.uuid4())
+
             r = put(auth['access_token'], id , str(sys.argv[3])+'_monitoring', status)
             # print( r.text.strip() + " - " + str(r.status_code))
             print(sys.argv[4]+"/db/"+id)

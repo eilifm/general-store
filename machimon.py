@@ -84,7 +84,7 @@ if __name__ == "__main__":
     "username": "server",
     "password": "test"
     }
-
+    retries = 0
     while retries <= 1000:
         try:
             r = requests.post(sys.argv[4]+"/registration", data=body)

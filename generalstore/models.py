@@ -11,7 +11,7 @@ from sqlalchemy.types import TypeDecorator, CHAR
 import uuid
 import datetime as dt
 
-db = SQLAlchemy()
+db = SQLAlchemy(session_options={'autocommit': True})
 
 
 def connect_to_db(app):

@@ -15,4 +15,5 @@ SQLAlchemy = "*"
 psutil = "*"
 numpy = "*"
 tableprint = "*"
-scipy = "*"
+python-dateutil = "*"
+

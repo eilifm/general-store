@@ -1,7 +1,7 @@
 import requests
 import uuid
 import sys
-
+import json
 
 def refresh(refresh_token):
     r = requests.post(sys.argv[4]+"/token/refresh", )
@@ -90,7 +90,7 @@ if __name__ == "__main__":
             r = requests.post(sys.argv[4]+"/registration", data=body)
 
             auth = login('test3', 'test')
-            print(auth)
+            print(json.dumps(auth))
             break
         except Exception as e:
             print(e)

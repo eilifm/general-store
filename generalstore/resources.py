@@ -5,7 +5,7 @@ from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_r
 import json
 from sqlalchemy import update
 import sqlalchemy.exc as sq_exc
-
+import dateutil.parser
 
 
 parser = reqparse.RequestParser()
@@ -226,8 +226,16 @@ class ObventManage(Resource):
 class ObjectManage(Resource):
     @jwt_required
     def get(self, o_type):
-        recs, next_url, prev = Obvents.get_last(o_type, request.args.get("n", type=int))
+       # recs, next_url, prev = Obvents.get_last(o_type, request.args.get("n", type=int))
+        n = request.args.get("n", 20,  type=int)
+        if n > 1000:
+            return {'msg': "n cannot be greater than 1000"}, 401
 
+        recs, next_url, prev = Obvents.get_by_time(o_type, request.args.get("ts", None,  type=int), n)
+        
+       # print(recs[-1].last_ts.timestamp()*1000000)
+
+        
         if not prev:
             prev = ''
         else:
@@ -237,9 +245,9 @@ class ObjectManage(Resource):
             next_url = ''
         else:
             next_url = request.url_root[0:-1] + next_url
-        return { 'next': next_url,
+        return { 'next': int(recs[-1].last_ts.timestamp()*1000),
                  'last': prev,
-                 'data': [x.serialize for x in recs.items]
+                 'data': [x.serialize for x in recs]
                  }
 
 

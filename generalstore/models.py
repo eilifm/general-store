@@ -9,6 +9,7 @@ import _datetime
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.types import TypeDecorator, CHAR
 import uuid
+import datetime as dt
 
 db = SQLAlchemy()
 
@@ -206,4 +207,33 @@ class Obvents(db.Model):
         prev_url = url_for('objectmanage', o_type = o_type, page=posts.prev_num, n=n) \
             if posts.has_prev else None
         return posts, next_url, prev_url
+
+
+    @classmethod
+    def get_by_time(cls, o_type, ts, n):
+        #page = request.args.get('page', 1, type=int)
+        #ts = request.args.get("ts", None, type=int) 
+        #n = request.args.get('n', 10, type=int)
+ #       errors = []
+
+        #iso_ts = dt.datetime.utcfromtimestamp(ts)
+
+#        except Exception as e:
+#            errors.append(e.message)
+#            return None, None, None, errors
+
+
+        if not ts:
+            posts = cls.query.filter(o_type == o_type).order_by(Obvents.last_ts.desc()).limit(n).all()
+        else:
+            ts = ts/1000
+            iso_ts = dt.datetime.utcfromtimestamp(ts)
+            posts = cls.query.filter(o_type == o_type).filter(Obvents.last_ts <= iso_ts).order_by(Obvents.last_ts.desc()).limit(n).all()
+        return posts, None, None
+
+#        next_url = url_for('objectmanage', o_type = o_type, page=posts.next_num, n=n) \
+#            if posts.has_next else None
+#        prev_url = url_for('objectmanage', o_type = o_type, page=posts.prev_num, n=n) \
+#            if posts.has_prev else None
+#        return posts, next_url, prev_url, errors
 

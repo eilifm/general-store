@@ -177,17 +177,71 @@ class ObventManage(Resource):
         #         print(type(e))
         #         return {'msg': "Something went wrong"}
 
+    # def post(self, id):
+    #
+    #     data = request.get_json(silent=True)
+    #     if not data:
+    #         try:
+    #             data = json.loads(request.data)
+    #         except json.JSONDecodeError:
+    #             return {'msg': 'Something went wrong'}, 500
+    #         return {'msg': 'Something went wrong'}, 500
+    #
+    #
+    #     rows = db.session.query(Obvents).filter(Obvents.id == id).update(dict(val=data['data'], o_type=data['o_type'], last_ts=datetime.datetime.utcnow()))
+    #     db.session.commit()
+    #     if rows == 0:
+    #         try:
+    #             new_event = Obvents(id=id, val=data['data'], o_type=data['o_type'], o_id=data['o_id'])
+    #         except KeyError:
+    #             new_event = Obvents(id=id, val=data['data'], o_type=data['o_type'], o_id=None)
+    #
+    #         try:
+    #             new_event.add()
+    #             return {"success": True}
+    #         except sq_exc.IntegrityError as e:
+    #             return {'msg': str(e)}, 403
+    #
+    #         except Exception as e:
+    #             print(type(e))
+    #             return {'msg': "Something went wrong"}
+    #
+    #     else:
+    #         return {"success": True}
+    #
+
+# class ObjectManage(Resource):
+#     # @jwt_required
+#     def get(self, o_type):
+#         recs, next, prev = Obvents.find_by_type(o_type)
+#         if not prev:
+#             prev = ''
+#         return { 'next': request.url_root[0:-1] + next,
+#                  'last': request.url_root[0:-1] + prev,
+#                  # 'last': request.base_url + prev,
+#                  'data': [x.serialize for x in recs.items]
+#                  }
+
 
 class ObjectManage(Resource):
     @jwt_required
     def get(self, o_type):
-        recs, next, prev = Obvents.find_by_type(o_type)
+        recs, next_url, prev = Obvents.get_last(o_type, request.args.get("n", type=int))
+
         if not prev:
             prev = ''
-        return { 'next': request.base_url + next,
-                 'last': request.base_url + prev,
+        else:
+            prev = request.url_root[0:-1] + prev
+
+        if not next_url:
+            next_url = ''
+        else:
+            next_url = request.url_root[0:-1] + next_url
+        return { 'next': next_url,
+                 'last': prev,
                  'data': [x.serialize for x in recs.items]
                  }
+
 
 class Status(Resource):
     def get(self):

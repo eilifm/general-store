@@ -72,23 +72,3 @@ for i in range(int(sys.argv[1])):
 
     print(get(auth['access_token'], "http://"+ sys.argv[3] + ":5000/db/"+rec_id))
 
-
-# YOURS
-# {
-#     "time": "2019-01-21 17:10:37",
-#     "sensors": [
-#         {"number": "12", "type": "temperature", "value": "3"},
-#         {"number": "7", "type" : "barometer", "value": "29.937" }
-#     ]
-# }
-#
-# MINE
-# {
-#     "time": "2019-01-21 17:10:37",
-#     "inside": {
-#         "temperature": "3",
-#         "barometer": "34.6789"
-#     }
-# }
-
-#curl -d '{"username":"eilif_test", "password":"posmikk"}' -H "Content-Type: application/json" -X POST http://10.8.0.3:5000/login

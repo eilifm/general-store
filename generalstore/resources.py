@@ -232,10 +232,8 @@ class ObjectManage(Resource):
             return {'msg': "n cannot be greater than 1000"}, 401
 
         recs, next_url, prev = Obvents.get_by_time(o_type, request.args.get("ts", None,  type=int), n)
-        
-       # print(recs[-1].last_ts.timestamp()*1000000)
 
-        
+
         if not prev:
             prev = ''
         else:
@@ -245,8 +243,9 @@ class ObjectManage(Resource):
             next_url = ''
         else:
             next_url = request.url_root[0:-1] + next_url
-        return { 'next': int(recs[-1].last_ts.timestamp()*1000),
-                 'last': prev,
+
+        return { 'next': next_url,
+                 'this': prev,
                  'data': [x.serialize for x in recs]
                  }
 

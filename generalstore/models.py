@@ -214,26 +214,24 @@ class Obvents(db.Model):
         #page = request.args.get('page', 1, type=int)
         #ts = request.args.get("ts", None, type=int) 
         #n = request.args.get('n', 10, type=int)
- #       errors = []
 
-        #iso_ts = dt.datetime.utcfromtimestamp(ts)
-
-#        except Exception as e:
-#            errors.append(e.message)
-#            return None, None, None, errors
-
-
+        print(o_type, ts, n)
         if not ts:
-            posts = cls.query.filter(o_type == o_type).order_by(Obvents.last_ts.desc()).limit(n).all()
+            posts = cls.query.filter(Obvents.o_type == o_type).order_by(Obvents.last_ts.desc()).limit(n).all()
         else:
-            ts = ts/1000
-            iso_ts = dt.datetime.utcfromtimestamp(ts)
-            posts = cls.query.filter(o_type == o_type).filter(Obvents.last_ts <= iso_ts).order_by(Obvents.last_ts.desc()).limit(n).all()
-        return posts, None, None
+            ts = ts/1000000
+            iso_ts = dt.datetime.fromtimestamp(ts)
+            print(iso_ts)
+            posts = cls.query.filter(Obvents.o_type == o_type).filter(Obvents.last_ts <= iso_ts).order_by(Obvents.last_ts.desc()).limit(n).all()
 
-#        next_url = url_for('objectmanage', o_type = o_type, page=posts.next_num, n=n) \
-#            if posts.has_next else None
-#        prev_url = url_for('objectmanage', o_type = o_type, page=posts.prev_num, n=n) \
-#            if posts.has_prev else None
-#        return posts, next_url, prev_url, errors
 
+        this_ts = int(posts[0].last_ts.timestamp()*1000000)
+        this_url = url_for('objectmanage', o_type=o_type, n=n, ts=this_ts)
+
+        next_url = None
+        if len(posts) == n:
+            next_ts = int(posts[-1].last_ts.timestamp()*1000000)
+            next_url = url_for('objectmanage', o_type = o_type, n=n, ts=next_ts)
+
+
+        return posts, next_url, this_url

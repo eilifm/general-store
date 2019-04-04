@@ -215,7 +215,7 @@ class Obvents(db.Model):
         #ts = request.args.get("ts", None, type=int) 
         #n = request.args.get('n', 10, type=int)
 
-        print(o_type, ts, n)
+        #print(o_type, ts, n)
         if not ts:
             posts = cls.query.filter(Obvents.o_type == o_type).order_by(Obvents.last_ts.desc()).limit(n).all()
         else:

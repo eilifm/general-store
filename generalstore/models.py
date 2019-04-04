@@ -11,7 +11,7 @@ from sqlalchemy.types import TypeDecorator, CHAR
 import uuid
 import datetime as dt
 
-db = SQLAlchemy()
+db = SQLAlchemy(session_options={'autocommit': True})
 
 
 def connect_to_db(app):
@@ -31,7 +31,7 @@ class UserModel(db.Model):
 
     def save_to_db(self):
         db.session.add(self)
-        db.session.commit()
+        #db.session.commit()
 
     @classmethod
     def find_by_username(cls, username):
@@ -50,7 +50,7 @@ class UserModel(db.Model):
     def delete_all(cls):
         try:
             num_rows_deleted = db.session.query(cls).delete()
-            db.session.commit()
+            #db.session.commit()
             return {'message': '{} row(s) deleted'.format(num_rows_deleted)}
         except:
             return {'message': 'Something went wrong'}
@@ -70,7 +70,7 @@ class RevokedTokenModel(db.Model):
 
     def add(self):
         db.session.add(self)
-        db.session.commit()
+        #db.session.commit()
 
     @classmethod
     def is_jti_blacklisted(cls, jti):
@@ -152,7 +152,7 @@ class Obvents(db.Model):
 
     def add(self):
         db.session.add(self)
-        db.session.commit()
+        #db.session.commit()
 
     def save(self):
         db.session.commit()
@@ -165,13 +165,13 @@ class Obvents(db.Model):
     def find_by_id(cls, id):
 
         q = cls.query.filter_by(id = id).one()
-        cls.save()
+        #cls.save()
         #return str(dict(row.items()))
 
     @classmethod
     def find_by_id_2(cls, id):
         row = db.engine.execute("SELECT * FROM obvents WHERE id='{}' LIMIT 1".format(id)).fetchall()[0]
-        cls.save()
+        #cls.save()
         return str(dict(row.items()))
 
 
@@ -190,7 +190,7 @@ class Obvents(db.Model):
             page, 10, False)
         # posts = cls.query.filter_by(o_type = o_type).paginate(
         #     page, 10, False)
-        cls.save()
+        #cls.save()
         next_url = url_for('objectmanage', o_type = o_type, page=posts.next_num) \
             if posts.has_next else None
         prev_url = url_for('objectmanage', o_type = o_type, page=posts.prev_num) \
@@ -204,7 +204,7 @@ class Obvents(db.Model):
 
         posts = cls.query.filter_by(o_type = o_type).order_by(Obvents.last_ts.desc()).paginate(
             page, n, error_out=True, max_per_page=200)
-        db.session.commit()
+        #db.session.commit()
         next_url = url_for('objectmanage', o_type = o_type, page=posts.next_num, n=n) \
             if posts.has_next else None
         prev_url = url_for('objectmanage', o_type = o_type, page=posts.prev_num, n=n) \
@@ -232,7 +232,7 @@ class Obvents(db.Model):
             ts = ts/1000
             iso_ts = dt.datetime.utcfromtimestamp(ts)
             posts = cls.query.filter(o_type == o_type).filter(Obvents.last_ts <= iso_ts).order_by(Obvents.last_ts.desc()).limit(n).all()
-        cls.save()
+        #cls.save()
         return posts, None, None
 
 #        next_url = url_for('objectmanage', o_type = o_type, page=posts.next_num, n=n) \

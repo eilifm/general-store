@@ -133,7 +133,7 @@ class ObventManage(Resource):
 
 
         rows = db.session.query(Obvents).filter(Obvents.id == id).update(dict(val=data['data'], o_type=data['o_type'], last_ts=datetime.datetime.utcnow()))
-        db.session.commit()
+        #db.session.commit()
         if rows == 0:
             try:
                 new_event = Obvents(id=id, val=data['data'], o_type=data['o_type'], o_id=data['o_id'])

@@ -136,9 +136,9 @@ class ObventManage(Resource):
         db.session.commit()
         if rows == 0:
             try:
-                new_event = Obvents(id=id, val=data['data'], o_type=data['o_type'], o_id=data['o_id'], created_at=datetime.datetime.utcnow())
+                new_event = Obvents(id=id, val=data['data'], o_type=data['o_type'], o_id=data['o_id'])
             except KeyError:
-                new_event = Obvents(id=id, val=data['data'], o_type=data['o_type'], o_id=None, created_at=datetime.datetime.utcnow())
+                new_event = Obvents(id=id, val=data['data'], o_type=data['o_type'], o_id=None)
 
             try:
                 new_event.add()

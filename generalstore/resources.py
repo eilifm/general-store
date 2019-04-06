@@ -136,9 +136,9 @@ class ObventManage(Resource):
         db.session.commit()
         if rows == 0:
             try:
-                new_event = Obvents(id=id, val=data['data'], o_type=data['o_type'], o_id=data['o_id'])
+                new_event = Obvents(id=id, val=data['data'], o_type=data['o_type'], o_id=data['o_id'], created_at=datetime.datetime.utcnow())
             except KeyError:
-                new_event = Obvents(id=id, val=data['data'], o_type=data['o_type'], o_id=None)
+                new_event = Obvents(id=id, val=data['data'], o_type=data['o_type'], o_id=None, created_at=datetime.datetime.utcnow())
 
             try:
                 new_event.add()
@@ -176,6 +176,8 @@ class ObventManage(Resource):
         #     except Exception as e:
         #         print(type(e))
         #         return {'msg': "Something went wrong"}
+    def delete(self, id):
+        Obvents(id=id).delete()
 
     # def post(self, id):
     #

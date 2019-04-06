@@ -131,7 +131,8 @@ class Obvents(db.Model):
     )
     id = db.Column(UUID, primary_key = True)
     o_id = db.Column(VARCHAR(255), index=True)
-    last_ts = db.Column(TIMESTAMP, onupdate=_datetime.datetime.now(), server_default=db.func.current_timestamp(), server_onupdate=db.func.current_timestamp(), index=True)
+    last_ts = db.Column(TIMESTAMP, onupdate=_datetime.datetime.utcnow(), server_default=db.func.timezone('UTC', db.func.current_timestamp()), server_onupdate=db.func.timezone('UTC', db.func.current_timestamp()), index=True)
+    created_at = db.Column(TIMESTAMP, server_default=db.func.timezone('UTC', db.func.current_timestamp()), index=True)
     o_type = db.Column(VARCHAR(255), index=True)
     val = db.Column(JSONB)
     parent_id = db.Column(UUID, ForeignKey('obvents.id'), index=True)
@@ -147,7 +148,8 @@ class Obvents(db.Model):
             'data': self.val,
             'o_id': self.o_id,
             "o_type": self.o_type,
-            "last_ts": self.last_ts.isoformat()
+            "last_ts": self.last_ts.isoformat(),
+            "created_at": self.created_at.isoformat()
         }
 
     def add(self):
@@ -155,6 +157,10 @@ class Obvents(db.Model):
         db.session.commit()
 
     def save(self):
+        db.session.commit()
+
+    def delete(self):
+        self.query.filter_by(id=self.id).delete()
         db.session.commit()
 
     @classmethod
@@ -194,6 +200,7 @@ class Obvents(db.Model):
             if posts.has_prev else None
         return posts, next_url, prev_url
 
+    @classmethod
     @classmethod
     def get_last(cls, o_type, n=None):
         page = request.args.get('page', 1, type=int)

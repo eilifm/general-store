@@ -176,6 +176,8 @@ class ObventManage(Resource):
         #     except Exception as e:
         #         print(type(e))
         #         return {'msg': "Something went wrong"}
+    def delete(self, id):
+        Obvents(id=id).delete()
 
     # def post(self, id):
     #

@@ -230,11 +230,11 @@ class ObjectManage(Resource):
     def get(self, o_type):
        # recs, next_url, prev = Obvents.get_last(o_type, request.args.get("n", type=int))
         n = request.args.get("n", 20,  type=int)
+
         if n > 1000:
             return {'msg': "n cannot be greater than 1000"}, 401
 
         recs, next_url, prev = Obvents.get_by_time(o_type, request.args.get("ts", None,  type=int), n)
-
 
         if not prev:
             prev = ''

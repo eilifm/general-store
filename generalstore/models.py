@@ -201,7 +201,6 @@ class Obvents(db.Model):
         return posts, next_url, prev_url
 
     @classmethod
-    @classmethod
     def get_last(cls, o_type, n=None):
         page = request.args.get('page', 1, type=int)
         n = request.args.get('n', 10, type=int)
@@ -218,27 +217,39 @@ class Obvents(db.Model):
 
     @classmethod
     def get_by_time(cls, o_type, ts, n):
-        #page = request.args.get('page', 1, type=int)
-        #ts = request.args.get("ts", None, type=int) 
-        #n = request.args.get('n', 10, type=int)
-
-        #print(o_type, ts, n)
         if not ts:
-            posts = cls.query.filter(Obvents.o_type == o_type).order_by(Obvents.last_ts.desc()).limit(n).all()
-        else:
-            ts = ts/1000000
-            iso_ts = dt.datetime.fromtimestamp(ts)
-            print(iso_ts)
-            posts = cls.query.filter(Obvents.o_type == o_type).filter(Obvents.last_ts <= iso_ts).order_by(Obvents.last_ts.desc()).limit(n).all()
+            sub_query = cls.query.with_entities(Obvents.created_at).order_by(Obvents.created_at.desc()).limit(1)
+            query = cls.query.filter(Obvents.created_at.in_(sub_query))
+            posts = query.all()
+            # posts = cls.query.filter(Obvents.o_type == o_type).order_by(Obvents.created_at.desc()).limit(n+4).all()
+            this_ts = int(posts[0].created_at.timestamp() * 1000000)
+            this_url = url_for('objectmanage', o_type=o_type, n=n, ts=this_ts)
 
-
-        this_ts = int(posts[0].last_ts.timestamp()*1000000)
-        this_url = url_for('objectmanage', o_type=o_type, n=n, ts=this_ts)
-
-        next_url = None
-        if len(posts) == n:
             next_ts = int(posts[-1].last_ts.timestamp()*1000000)
             next_url = url_for('objectmanage', o_type = o_type, n=n, ts=next_ts)
+            return posts, next_url, this_url
 
+        else:
+            ts = ts/1000000
+            iso_ts = dt.datetime.utcfromtimestamp(ts)
 
-        return posts, next_url, this_url
+            sub_query = cls.query.with_entities(Obvents.created_at).distinct(Obvents.created_at).filter(Obvents.created_at < iso_ts).order_by(Obvents.created_at.desc()).limit(n)
+            query = cls.query.filter(Obvents.created_at.in_(sub_query))
+
+            posts = query.all()
+            # posts = cls.query.filter(Obvents.o_type == o_type).filter(Obvents.created_at <= iso_ts).order_by(Obvents.created_at.desc()).limit(n+1).all()
+            #
+            # Handling if there are no records to return
+            if len(posts) == 0:
+                print("No Records Found")
+                next_url = None
+                this_url = url_for('objectmanage', o_type=o_type, n=n, ts=int(ts*1000000))
+                return posts, next_url, this_url
+            else:
+                this_ts = int(posts[0].created_at.timestamp() * 1000000)+1
+                this_url = url_for('objectmanage', o_type=o_type, n=n, ts=this_ts)
+
+                next_ts = int(posts[-1].last_ts.timestamp()*1000000)
+                next_url = url_for('objectmanage', o_type = o_type, n=n, ts=next_ts)
+                return posts, next_url, this_url
+

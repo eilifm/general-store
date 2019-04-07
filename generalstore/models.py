@@ -218,7 +218,7 @@ class Obvents(db.Model):
     @classmethod
     def get_by_time(cls, o_type, ts, n):
         if not ts:
-            sub_query = cls.query.with_entities(Obvents.created_at).order_by(Obvents.created_at.desc()).limit(1)
+            sub_query = cls.query.with_entities(Obvents.created_at).order_by(Obvents.created_at.desc()).limit(n)
             query = cls.query.filter(Obvents.created_at.in_(sub_query))
             posts = query.all()
             # posts = cls.query.filter(Obvents.o_type == o_type).order_by(Obvents.created_at.desc()).limit(n+4).all()

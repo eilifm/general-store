@@ -218,7 +218,10 @@ class Obvents(db.Model):
     @classmethod
     def get_by_time(cls, o_type, ts, n):
         if not ts:
-            posts = cls.query.filter(Obvents.o_type == o_type).order_by(Obvents.created_at.desc()).limit(n+4).all()
+            sub_query = cls.query.with_entities(Obvents.created_at).order_by(Obvents.created_at.desc()).limit(1)
+            query = cls.query.filter(Obvents.created_at.in_(sub_query))
+            posts = query.all()
+            # posts = cls.query.filter(Obvents.o_type == o_type).order_by(Obvents.created_at.desc()).limit(n+4).all()
             this_ts = int(posts[0].created_at.timestamp() * 1000000)
             this_url = url_for('objectmanage', o_type=o_type, n=n, ts=this_ts)
 

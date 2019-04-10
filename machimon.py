@@ -2,44 +2,107 @@ import requests
 import uuid
 import sys
 import json
+import logging
+from logging.handlers import TimedRotatingFileHandler
 
-def refresh(refresh_token):
-    r = requests.post(sys.argv[4]+"/token/refresh", )
+import os
+import time
 
-def login(username, password):
-    body = {
-        "username": username,
-        "password": password
-    }
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
-    r = requests.post(sys.argv[4]+"/login", data=body)
-    return r.json()
-
-
-def get(access_token, url):
-    header = {
-        'Authorization': "Bearer " + access_token
-    }
-    r = requests.get(url, headers=header)
-    return r
+# create a file handler
+handler = TimedRotatingFileHandler('machimon.log', when="m", interval=10, backupCount=10) #logging.FileHandler('hello.log')
+handler.setLevel(logging.INFO)
 
 
-def put(access_token, id, otype, data):
 
-    header = {
-        'Authorization': "Bearer " + access_token
-    }
+# create a logging format
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
 
-    body = {
-        'o_type': otype,
-        'data': data
-    }
 
-    print(json.dumps(body))
-    r = requests.put(sys.argv[4]+"/db/"+id, headers=header, json=body)
+stream = logging.StreamHandler()
+stream.setFormatter(formatter)
 
-    return r
+# add the handlers to the logger
+logger.addHandler(handler)
+logger.addHandler(stream)
 
+
+class GeneralStoreAPI(object):
+    def __init__(self, url_prefix, username, password):
+        self.url_prefix = url_prefix
+        self.username = username
+        self.password = password
+
+        self.auth = self.login()
+        logger.info(self.auth)
+        self.access_token = self.auth['access_token']
+        self.last_refresh = time.time()
+
+    @staticmethod
+    def register(url_prefix):
+        body = {
+            "username": os.environ['GENERAL_STORE_USERNAME'],
+            "password": os.environ['GENERAL_STORE_PASSWORD']
+        }
+        r = requests.post(url_prefix+"/registration", data=body)
+        return r.text
+
+    def login(self):
+        body = {
+            "username": self.username,
+            "password": self.password
+        }
+        r = requests.post(self.url_prefix+ "/login", data=body)
+        return r.json()
+
+    # def refresh(self):
+    #     r = requests.post(self.url_prefix + "/token/refresh", self.refresh_token)
+    #     return r.json
+
+    def chk_refresh(self):
+        if time.time() - self.last_refresh >= 250:
+            self.auth = self.login()
+            self.access_token = self.auth['access_token']
+            self.last_refresh = time.time()
+
+
+    def get(self, url):
+        self.chk_refresh()
+        header = {
+            'Authorization': "Bearer " + self.access_token
+        }
+        r = requests.get(url, headers=header)
+
+        return r.json()
+
+    def put(self, id, otype, data):
+        logger.info(data)
+        self.chk_refresh()
+        header = {
+            'Authorization': "Bearer " + self.access_token
+        }
+
+        body = {
+            'o_type': otype,
+            'data': data
+        }
+
+        r = requests.put(self.url_prefix+"/db/"+id, headers=header, json=body)
+
+        return r.text
+
+    def delete(self, id):
+        self.chk_refresh()
+        header = {
+            'Authorization': "Bearer " + self.access_token
+        }
+
+        r = requests.delete(self.url_prefix+"/db/"+id, headers=header)
+
+        return r.text
 
 # for i in range(10000):
 #     print(put(auth['access_token'], "d36dab4c-48ca-4c2d-8cd4-78cde0c1009c", 'test', d))
@@ -80,53 +143,19 @@ def generate_status():
 # print(put(auth['access_token'], "d36dab4c-48ca-4c2d-8cd4-78cde0c1009c", 'test', "lol"))
 
 if __name__ == "__main__":
-    body = {
-    "username": "server",
-    "password": "test"
-    }
-    retries = 0
-    while retries <= 1000:
-        try:
-            r = requests.post(sys.argv[4]+"/registration", data=body)
-
-            auth = login('test3', 'test')
-            print(json.dumps(auth))
-            break
-        except Exception as e:
-            print(e)
-            retries += 1
-            time.sleep(60)
-
-
-
+    api = GeneralStoreAPI('https://general-store.foxkid.io', os.environ['GENERAL_STORE_USERNAME'],
+                          os.environ['GENERAL_STORE_PASSWORD'])
     start = time.time()
-    count = 0
-    import json
-    last = 0
+    logger.info(start)
     for i in range(int(sys.argv[1])):
-
         status = generate_status()
-
         retries = 0
-        while retries <= 100:
-            try:
-                if count % 100 == 0:
-                    auth = login('server', 'test')
-                    print(count/(time.time() - start))
-                    print(auth)
-                id = str(uuid.uuid4())
-
-                r = put(auth['access_token'], id , str(sys.argv[3])+'_monitoring', status)
-                # print( r.text.strip() + " - " + str(r.status_code))
-                print(sys.argv[4]+"/db/"+id)
-                break
-            except Exception as e:
-                print(e)
-                retries += 1
-                time.sleep(60)
+        id = str(uuid.uuid4())
+        r = api.put(id , str(sys.argv[3])+'_monitoring', status)
+        # print( r.text.strip() + " - " + str(r.status_code))
+        # print(sys.argv[4]+"/db/"+id)
 
             # r = get(auth['access_token'], sys.argv[4]+"/db/"+id)
 
-        time.sleep(float(sys.argv[2]))
+        # time.sleep(float(sys.argv[2]))
         # print(get(auth['access_token'], sys.argv[4]+"/db/d36dab4c-48ca-4c2d-8cd4-78cde0c1009c"))
-        count += 1

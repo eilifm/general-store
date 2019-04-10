@@ -65,8 +65,9 @@ class GeneralStoreAPI(object):
     #     return r.json
 
     def chk_refresh(self):
-        if time.time() - self.last_refresh >= 250:
+        if time.time() - self.last_refresh >= 60:
             self.auth = self.login()
+            self.r_session = requests.Session()
             self.access_token = self.auth['access_token']
             self.last_refresh = time.time()
 

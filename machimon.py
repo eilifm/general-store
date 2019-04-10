@@ -27,7 +27,7 @@ stream.setFormatter(formatter)
 
 # add the handlers to the logger
 logger.addHandler(handler)
-logger.addHandler(stream)
+# logger.addHandler(stream)
 
 
 class GeneralStoreAPI(object):

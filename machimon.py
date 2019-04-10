@@ -142,20 +142,20 @@ def generate_status():
 
 # print(put(auth['access_token'], "d36dab4c-48ca-4c2d-8cd4-78cde0c1009c", 'test', "lol"))
 
+def run():
+    status = generate_status()
+    retries = 0
+    id = str(uuid.uuid4())
+    r = api.put(id , str(sys.argv[3])+'_monitoring', status)
+
 if __name__ == "__main__":
     api = GeneralStoreAPI('https://general-store.foxkid.io', os.environ['GENERAL_STORE_USERNAME'],
                           os.environ['GENERAL_STORE_PASSWORD'])
-    start = time.time()
-    logger.info(start)
     for i in range(int(sys.argv[1])):
-        status = generate_status()
-        retries = 0
-        id = str(uuid.uuid4())
-        r = api.put(id , str(sys.argv[3])+'_monitoring', status)
-        # print( r.text.strip() + " - " + str(r.status_code))
-        # print(sys.argv[4]+"/db/"+id)
-
-            # r = get(auth['access_token'], sys.argv[4]+"/db/"+id)
-
-        # time.sleep(float(sys.argv[2]))
-        # print(get(auth['access_token'], sys.argv[4]+"/db/d36dab4c-48ca-4c2d-8cd4-78cde0c1009c"))
+        try:
+            run()
+            time.sleep(float(sys.argv[2]))
+        except Exception as e:
+            logger.exception(e, exc_info=True)
+            time.sleep(30)
+            continue

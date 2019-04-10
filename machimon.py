@@ -36,10 +36,12 @@ class GeneralStoreAPI(object):
         self.username = username
         self.password = password
 
+        self.r_session = requests.Session()
         self.auth = self.login()
         logger.info(self.auth)
         self.access_token = self.auth['access_token']
         self.last_refresh = time.time()
+
 
     @staticmethod
     def register(url_prefix):
@@ -55,7 +57,7 @@ class GeneralStoreAPI(object):
             "username": self.username,
             "password": self.password
         }
-        r = requests.post(self.url_prefix+ "/login", data=body)
+        r = self.r_session.post(self.url_prefix+ "/login", data=body)
         return r.json()
 
     # def refresh(self):
@@ -74,7 +76,7 @@ class GeneralStoreAPI(object):
         header = {
             'Authorization': "Bearer " + self.access_token
         }
-        r = requests.get(url, headers=header)
+        r = self.r_session.get(url, headers=header)
 
         return r.json()
 
@@ -90,7 +92,7 @@ class GeneralStoreAPI(object):
             'data': data
         }
 
-        r = requests.put(self.url_prefix+"/db/"+id, headers=header, json=body)
+        r = self.r_session.put(self.url_prefix+"/db/"+id, headers=header, json=body)
 
         return r.text
 
@@ -100,7 +102,7 @@ class GeneralStoreAPI(object):
             'Authorization': "Bearer " + self.access_token
         }
 
-        r = requests.delete(self.url_prefix+"/db/"+id, headers=header)
+        r = self.r_session.delete(self.url_prefix+"/db/"+id, headers=header)
 
         return r.text
 

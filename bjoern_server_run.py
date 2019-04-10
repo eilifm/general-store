@@ -2,8 +2,6 @@ from app import app
 import bjoern, os
 import signal
 
-#
-#
 # import sys
 # import os
 # import inspect

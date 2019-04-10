@@ -163,5 +163,6 @@ if __name__ == "__main__":
         except Exception as e:
             logger.exception(e, exc_info=True)
             api = init()
+            logger.info("Sleeping and trying again")
             time.sleep(30)
             continue
